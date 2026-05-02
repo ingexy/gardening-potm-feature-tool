@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gardening POTM Feature Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --moss: #3d6b35;
+            --leaf: #5a9e48;
+            --sage: #8fbc7a;
+            --cream: #faf7f0;
+            --parchment: #f2ece0;
+            --bark: #5c4a2a;
+            --soil: #3a2d1a;
+            --gold: #c9a84c;
+            --dew: rgba(90,158,72,0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cream);
+            min-height: 100vh;
+            background-image:
+                radial-gradient(ellipse at 10% 0%, rgba(90,158,72,0.18) 0%, transparent 55%),
+                radial-gradient(ellipse at 90% 100%, rgba(61,107,53,0.15) 0%, transparent 55%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%235a9e48' fill-opacity='0.04'%3E%3Cpath d='M30 0 C20 10 10 20 0 30 C10 40 20 50 30 60 C40 50 50 40 60 30 C50 20 40 10 30 0z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px 60px;
+        }
+
+        /* HEADER */
+        header {
+            text-align: center;
+            margin-bottom: 44px;
+            position: relative;
+        }
+
+        .header-deco {
+            font-size: 2rem;
+            letter-spacing: 0.3em;
+            color: var(--sage);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 900;
+            color: var(--moss);
+            line-height: 1.1;
+            letter-spacing: -0.01em;
+        }
+
+        header h1 span {
+            color: var(--gold);
+            font-style: italic;
+        }
+
+        .header-rule {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 16px;
+            justify-content: center;
+        }
+
+        .header-rule::before,
+        .header-rule::after {
+            content: '';
+            height: 1px;
+            width: 80px;
+            background: linear-gradient(90deg, transparent, var(--sage));
+        }
+        .header-rule::after {
+            background: linear-gradient(90deg, var(--sage), transparent);
+        }
+
+        .header-rule span {
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--bark);
+            font-weight: 500;
+        }
+
+        /* CONTROLS */
+        .controls-card {
+            background: white;
+            border-radius: 18px;
+            padding: 28px 32px;
+            box-shadow: 0 4px 24px rgba(61,107,53,0.09), 0 1px 3px rgba(0,0,0,0.04);
+            border: 1px solid rgba(90,158,72,0.14);
+            margin-bottom: 36px;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 18px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--bark);
+        }
+
+        input, select {
+            padding: 11px 14px;
+            border: 1.5px solid #ddd;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            color: var(--soil);
+            background: var(--cream);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a9e48' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--leaf);
+            box-shadow: 0 0 0 3px rgba(90,158,72,0.15);
+            background: white;
+        }
+
+        /* SCRIPT BLOCKS */
+        .blocks {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .block {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 16px rgba(61,107,53,0.07);
+            border: 1px solid rgba(90,158,72,0.12);
+            transition: box-shadow 0.25s, transform 0.25s;
+        }
+
+        .block:hover {
+            box-shadow: 0 8px 30px rgba(61,107,53,0.13);
+            transform: translateY(-2px);
+        }
+
+        .block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            background: linear-gradient(90deg, var(--moss), var(--leaf));
+        }
+
+        .block-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: white;
+        }
+
+        .copy-btn {
+            background: rgba(255,255,255,0.18);
+            color: white;
+            border: 1.5px solid rgba(255,255,255,0.5);
+            padding: 6px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            transition: background 0.2s, transform 0.15s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.32);
+            transform: scale(1.04);
+        }
+
+        .copy-btn:active {
+            transform: scale(0.98);
+        }
+
+        .block-body {
+            padding: 18px 22px;
+            font-family: 'Courier New', 'Courier', monospace;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            color: var(--soil);
+            white-space: pre-wrap;
+            background: var(--cream);
+            border-top: 1px solid rgba(90,158,72,0.1);
+            min-height: 60px;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: var(--moss);
+            color: white;
+            padding: 12px 22px;
+            border-radius: 30px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            box-shadow: 0 8px 24px rgba(61,107,53,0.35);
+            transform: translateY(80px);
+            opacity: 0;
+            transition: transform 0.35s cubic-bezier(.22,.84,.36,1), opacity 0.35s;
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            margin-top: 44px;
+            font-size: 0.75rem;
+            color: var(--sage);
+            letter-spacing: 0.08em;
+        }
+
+        @media (max-width: 600px) {
+            .controls-card { padding: 20px 16px; }
+            .block-body { font-size: 0.82rem; padding: 14px 14px; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+
+    <header>
+        <span class="header-deco">🌿 🌻 🌿</span>
+        <h1>Gardening <span>POTM</span> Feature Tool</h1>
+        <div class="header-rule"><span>Photo of the Month</span></div>
+    </header>
+
+    <div class="controls-card">
+        <div class="controls-grid">
+            <div class="field">
+                <label for="memberName">Naam Lid</label>
+                <input type="text" id="memberName" placeholder="Voer naam in…">
+            </div>
+            <div class="field">
+                <label for="membershipStatus">Membership Status</label>
+                <select id="membershipStatus">
+                    <option value="Artist">Artist</option>
+                    <option value="Member">Member</option>
+                    <option value="Vip Member">Vip Member</option>
+                    <option value="Vip Gold Member">Vip Gold Member</option>
+                    <option value="Platinum Member">Platinum Member</option>
+                    <option value="Elite Member">Elite Member</option>
+                    <option value="Hall of Fame Member">Hall of Fame Member</option>
+                    <option value="Diamond Member">Diamond Member</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="adminModRole">Admin / Mod</label>
+                <select id="adminModRole">
+                    <option value="Page Admin">Page Admin</option>
+                    <option value="Page Mod">Page Mod</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="adminModName">Naam Admin/Mod</label>
+                <input type="text" id="adminModName" placeholder="Bijv. Inge">
+            </div>
+            <div class="field">
+                <label for="adminModHandle">Vero Handle Admin/Mod</label>
+                <input type="text" id="adminModHandle" placeholder="@ingedavid" value="@">
+            </div>
+        </div>
+    </div>
+
+    <div class="blocks">
+
+        <div class="block">
+            <div class="block-header">
+                <span class="block-title">GARDENING FEATURE SCRIPT</span>
+                <button class="copy-btn" onclick="copyBlock('gardening-feature')">Kopieer</button>
+            </div>
+            <div class="block-body" id="gardening-feature"></div>
+        </div>
+
+        <div class="block">
+            <div class="block-header">
+                <span class="block-title">FEATURE COMMENT</span>
+                <button class="copy-btn" onclick="copyBlock('feature-comment')">Kopieer</button>
+            </div>
+            <div class="block-body" id="feature-comment"></div>
+        </div>
+
+        <div class="block">
+            <div class="block-header">
+                <span class="block-title">ORIGINAL PHOTO COMMENT</span>
+                <button class="copy-btn" onclick="copyBlock('original-photo-comment')">Kopieer</button>
+            </div>
+            <div class="block-body" id="original-photo-comment"></div>
+        </div>
+
+        <div class="block">
+            <div class="block-header">
+                <span class="block-title">EXTRA COMMENT</span>
+                <button class="copy-btn" onclick="copyBlock('extra-comment')">Kopieer</button>
+            </div>
+            <div class="block-body" id="extra-comment"></div>
+        </div>
+
+    </div>
+
+    <footer>🌱 Snap Gardening · rawkingdomarts.com 🌱</footer>
+</div>
+
+<div class="toast" id="toast">✓ Tekst gekopieerd naar klembord!</div>
+
+<script>
+    const templates = {
+        'gardening-feature': `#snap_gardening_specialfeature
+.
+Featured Snap {membershipStatus}: @{name}
+✨ C O N G R A T U L A T I O N S ✨
+__________________________________
+.
+💫💫   PHOTO OF THE MONTH   💫💫
+.
+Selected by {adminModRole} :
+{adminModName} : {adminModHandle}
+.
+This feature is worth 1 point towards your membership!
+.
+Follow vero.co/snap_kingdom for more pages to tag and follow
+Visit our Website:  www.rawkingdomarts.com
+.
+Contact vero.co/snap_community_member
+For your membership questions and level validations
+.
+#snap_community #snap_gardening #vero #verofriends #photoofthemonth
+.
+#snap_gardening_photoofthemonth
+#snap_gardening_{name}
+#snap_featured_{name}
+.
+.`,
+
+        'feature-comment': `@{name} Congratulations! 🎉 Brilliant Work! Your photography has been highlighted as Photo of the Month on Snap Gardening. Keep tagging your wonderful pictures with #snap_gardening`,
+
+        'original-photo-comment': `@{name} Congratulations! 💫
+Congratulations on your special feature " Photo of the Month" !🎉🎉👏👏
+Brilliant Work !!! 💫`,
+
+        'extra-comment': `@{name} Congratulations! 💫
+This feature is worth 1 point towards your membership!
+Brilliant Work!`
+    };
+
+    function render() {
+        const name           = document.getElementById('memberName').value.trim()    || 'name';
+        const status         = document.getElementById('membershipStatus').value;
+        const role           = document.getElementById('adminModRole').value;
+        const adminName      = document.getElementById('adminModName').value.trim()  || 'Name';
+        const adminHandle    = document.getElementById('adminModHandle').value.trim()|| '@';
+
+        Object.keys(templates).forEach(key => {
+            let text = templates[key];
+            text = text.replace(/{name}/g,             name);
+            text = text.replace(/{membershipStatus}/g, status);
+            text = text.replace(/{adminModRole}/g,     role);
+            text = text.replace(/{adminModName}/g,     adminName);
+            text = text.replace(/{adminModHandle}/g,   adminHandle);
+            document.getElementById(key).textContent = text;
+        });
+    }
+
+    function copyBlock(id) {
+        const text = document.getElementById(id).textContent;
+        navigator.clipboard.writeText(text).then(showToast).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            showToast();
+        });
+    }
+
+    function showToast() {
+        const t = document.getElementById('toast');
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    // handle @ prefix
+    document.getElementById('adminModHandle').addEventListener('input', function () {
+        if (!this.value.startsWith('@')) {
+            this.value = '@' + this.value.replace(/@/g, '');
+        }
+        render();
+    });
+
+    ['memberName','membershipStatus','adminModRole','adminModName'].forEach(id => {
+        document.getElementById(id).addEventListener('input',  render);
+        document.getElementById(id).addEventListener('change', render);
+    });
+
+    render();
+</script>
+</body>
+</html>
