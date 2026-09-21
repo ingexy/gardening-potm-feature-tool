@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +15,6 @@
             --bark: #5c4a2a;
             --soil: #3a2d1a;
             --gold: #c9a84c;
-            --dew: rgba(90,158,72,0.12);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -40,7 +39,6 @@
         header {
             text-align: center;
             margin-bottom: 44px;
-            position: relative;
         }
 
         .header-deco {
@@ -122,7 +120,7 @@
             color: var(--bark);
         }
 
-        input, select {
+        input, select, textarea {
             padding: 11px 14px;
             border: 1.5px solid #ddd;
             border-radius: 10px;
@@ -142,11 +140,17 @@
             padding-right: 32px;
         }
 
-        input:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--leaf);
             box-shadow: 0 0 0 3px rgba(90,158,72,0.15);
             background: white;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            line-height: 1.5;
         }
 
         /* SCRIPT BLOCKS */
@@ -205,9 +209,7 @@
             transform: scale(1.04);
         }
 
-        .copy-btn:active {
-            transform: scale(0.98);
-        }
+        .copy-btn:active { transform: scale(0.98); }
 
         .block-body {
             padding: 18px 22px;
@@ -219,6 +221,37 @@
             background: var(--cream);
             border-top: 1px solid rgba(90,158,72,0.1);
             min-height: 60px;
+        }
+
+        /* Personal comment block — editable inside the block */
+        .personal-comment-wrapper {
+            padding: 14px 22px 18px;
+            background: var(--cream);
+            border-top: 1px solid rgba(90,158,72,0.1);
+        }
+
+        .personal-comment-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--bark);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .personal-comment-wrapper textarea {
+            width: 100%;
+            min-height: 72px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.88rem;
+            background: white;
+            border: 1.5px solid rgba(90,158,72,0.3);
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: var(--soil);
+            line-height: 1.6;
+            resize: vertical;
         }
 
         /* TOAST */
@@ -245,15 +278,6 @@
             opacity: 1;
         }
 
-        /* FOOTER */
-        footer {
-            text-align: center;
-            margin-top: 44px;
-            font-size: 0.75rem;
-            color: var(--sage);
-            letter-spacing: 0.08em;
-        }
-
         @media (max-width: 600px) {
             .controls-card { padding: 20px 16px; }
             .block-body { font-size: 0.82rem; padding: 14px 14px; }
@@ -272,8 +296,8 @@
     <div class="controls-card">
         <div class="controls-grid">
             <div class="field">
-                <label for="memberName">Naam Lid</label>
-                <input type="text" id="memberName" placeholder="Voer naam in…">
+                <label for="memberName">Member Name</label>
+                <input type="text" id="memberName" placeholder="Enter name…">
             </div>
             <div class="field">
                 <label for="membershipStatus">Membership Status</label>
@@ -296,8 +320,8 @@
                 </select>
             </div>
             <div class="field">
-                <label for="adminModName">Naam Admin/Mod</label>
-                <input type="text" id="adminModName" placeholder="Bijv. Inge">
+                <label for="adminModName">Admin / Mod Name</label>
+                <input type="text" id="adminModName" placeholder="e.g. Inge">
             </div>
             <div class="field">
                 <label for="adminModHandle">Vero Handle Admin/Mod</label>
@@ -308,48 +332,47 @@
 
     <div class="blocks">
 
+        <!-- GARDENING FEATURE SCRIPT -->
         <div class="block">
             <div class="block-header">
                 <span class="block-title">GARDENING FEATURE SCRIPT</span>
-                <button class="copy-btn" onclick="copyBlock('gardening-feature')">Kopieer</button>
+                <button class="copy-btn" onclick="copyBlock('gardening-feature')">Copy</button>
             </div>
             <div class="block-body" id="gardening-feature"></div>
         </div>
 
+        <!-- FEATURE COMMENT -->
         <div class="block">
             <div class="block-header">
                 <span class="block-title">FEATURE COMMENT</span>
-                <button class="copy-btn" onclick="copyBlock('feature-comment')">Kopieer</button>
+                <button class="copy-btn" onclick="copyFeatureComment()">Copy</button>
             </div>
-            <div class="block-body" id="feature-comment"></div>
+            <div class="block-body" id="feature-comment-top"></div>
+            <div class="personal-comment-wrapper">
+                <span class="personal-comment-label">Personal Comment</span>
+                <textarea id="personalComment" placeholder="Write your personal comment here…" oninput="renderFeatureComment()"></textarea>
+            </div>
+            <!-- hidden combined output for copying -->
+            <div style="display:none" id="feature-comment-combined"></div>
         </div>
 
+        <!-- ORIGINAL PHOTO COMMENT -->
         <div class="block">
             <div class="block-header">
                 <span class="block-title">ORIGINAL PHOTO COMMENT</span>
-                <button class="copy-btn" onclick="copyBlock('original-photo-comment')">Kopieer</button>
+                <button class="copy-btn" onclick="copyBlock('original-photo-comment')">Copy</button>
             </div>
             <div class="block-body" id="original-photo-comment"></div>
         </div>
 
-        <div class="block">
-            <div class="block-header">
-                <span class="block-title">EXTRA COMMENT</span>
-                <button class="copy-btn" onclick="copyBlock('extra-comment')">Kopieer</button>
-            </div>
-            <div class="block-body" id="extra-comment"></div>
-        </div>
-
     </div>
 
-    <footer>🌱 Snap Gardening · rawkingdomarts.com 🌱</footer>
 </div>
 
-<div class="toast" id="toast">✓ Tekst gekopieerd naar klembord!</div>
+<div class="toast" id="toast">✓ Text copied to clipboard!</div>
 
 <script>
-    const templates = {
-        'gardening-feature': `#snap_gardening_specialfeature
+    const featureScriptTemplate = `#snap_gardening_specialfeature
 .
 Featured Snap {membershipStatus}: @{name}
 ✨ C O N G R A T U L A T I O N S ✨
@@ -374,39 +397,61 @@ For your membership questions and level validations
 #snap_gardening_{name}
 #snap_featured_{name}
 .
-.`,
+.`;
 
-        'feature-comment': `@{name} Congratulations! 🎉 Brilliant Work! Your photography has been highlighted as Photo of the Month on Snap Gardening. Keep tagging your wonderful pictures with #snap_gardening`,
+    const featureCommentTop = `✨✨ CONGRATULATIONS @{name} ✨✨
+✨✨    On Being our Photo of the Month Winner.   ✨✨`;
 
-        'original-photo-comment': `@{name} Congratulations! 💫
-Congratulations on your special feature " Photo of the Month" !🎉🎉👏👏
-Brilliant Work !!! 💫`,
+    const originalPhotoTemplate = `✨✨ CONGRATULATIONS @{name} ✨✨
+✨✨    On Being our Photo of the Month Winner`;
 
-        'extra-comment': `@{name} Congratulations! 💫
-This feature is worth 1 point towards your membership!
-Brilliant Work!`
-    };
+    function fill(template, vals) {
+        return template
+            .replace(/{name}/g,             vals.name)
+            .replace(/{membershipStatus}/g, vals.status)
+            .replace(/{adminModRole}/g,     vals.role)
+            .replace(/{adminModName}/g,     vals.adminName)
+            .replace(/{adminModHandle}/g,   vals.adminHandle);
+    }
+
+    function getVals() {
+        return {
+            name:        document.getElementById('memberName').value.trim()     || 'name',
+            status:      document.getElementById('membershipStatus').value,
+            role:        document.getElementById('adminModRole').value,
+            adminName:   document.getElementById('adminModName').value.trim()   || 'Name',
+            adminHandle: document.getElementById('adminModHandle').value.trim() || '@'
+        };
+    }
+
+    function renderFeatureComment() {
+        const v = getVals();
+        const top      = fill(featureCommentTop, v);
+        const personal = document.getElementById('personalComment').value.trim();
+        document.getElementById('feature-comment-top').textContent = top;
+        // combined (hidden) for copy
+        const combined = personal ? top + '\n\n' + personal : top;
+        document.getElementById('feature-comment-combined').textContent = combined;
+    }
 
     function render() {
-        const name           = document.getElementById('memberName').value.trim()    || 'name';
-        const status         = document.getElementById('membershipStatus').value;
-        const role           = document.getElementById('adminModRole').value;
-        const adminName      = document.getElementById('adminModName').value.trim()  || 'Name';
-        const adminHandle    = document.getElementById('adminModHandle').value.trim()|| '@';
-
-        Object.keys(templates).forEach(key => {
-            let text = templates[key];
-            text = text.replace(/{name}/g,             name);
-            text = text.replace(/{membershipStatus}/g, status);
-            text = text.replace(/{adminModRole}/g,     role);
-            text = text.replace(/{adminModName}/g,     adminName);
-            text = text.replace(/{adminModHandle}/g,   adminHandle);
-            document.getElementById(key).textContent = text;
-        });
+        const v = getVals();
+        document.getElementById('gardening-feature').textContent       = fill(featureScriptTemplate, v);
+        document.getElementById('original-photo-comment').textContent  = fill(originalPhotoTemplate, v);
+        renderFeatureComment();
     }
 
     function copyBlock(id) {
         const text = document.getElementById(id).textContent;
+        doClipboard(text);
+    }
+
+    function copyFeatureComment() {
+        const text = document.getElementById('feature-comment-combined').textContent;
+        doClipboard(text);
+    }
+
+    function doClipboard(text) {
         navigator.clipboard.writeText(text).then(showToast).catch(() => {
             const ta = document.createElement('textarea');
             ta.value = text;
@@ -424,7 +469,6 @@ Brilliant Work!`
         setTimeout(() => t.classList.remove('show'), 2800);
     }
 
-    // handle @ prefix
     document.getElementById('adminModHandle').addEventListener('input', function () {
         if (!this.value.startsWith('@')) {
             this.value = '@' + this.value.replace(/@/g, '');
